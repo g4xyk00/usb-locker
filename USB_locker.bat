@@ -1,4 +1,4 @@
-:: USB Locker v1.1
+:: USB Locker v1.2
 :: Author: g4xyk00
 :: Tested on Windows 7, 10
 
@@ -21,7 +21,7 @@ echo \ \_/ /_\ \/ \/  \ ^| ^|^| (_) ^|^| (__ ^|   ^<^|  __/^| ^|
 echo  \___/ \__/\_____/ ^|_^| \___/  \___^|^|_^|\_\\___^|^|_^|   
 @echo:
 echo Created by: Gary Kong (g4xyk00)
-echo Version: 1.1
+echo Version: 1.2
 echo Homepage: www.axcelsec.com                                               
 													
 @echo:
@@ -151,6 +151,7 @@ del 1.txt
 echo ***** Action ***** 
 echo [1] Allow removable storage access
 echo [2] Deny removable storage access 
+echo [3] Revert to default setting
 echo [0] Exit Program
 @echo:
 SET /P A=Please select an action (e.g. 2) and press ENTER: 
@@ -158,6 +159,7 @@ SET /P A=Please select an action (e.g. 2) and press ENTER:
 IF %A%==0 GOTO END
 IF %A%==1 GOTO ACCESS_ALLOW
 IF %A%==2 GOTO ACCESS_DENY
+IF %A%==3 GOTO ACCESS_CLEAR
 
 :ACCESS_ALLOW
 reg add HKLM\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices /t REG_DWORD /v Deny_All /d 0 /f > nul 2>&1
@@ -190,6 +192,24 @@ reg add HKU\%currentSID%\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDev
 echo Removable storage access is now DENIED!
 @echo:
 GOTO MAIN_ACTIVITY
+
+
+:ACCESS_CLEAR
+reg delete HKLM\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices /v Deny_All /f > nul 2>&1
+reg delete HKLM\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{53f5630d-b6bf-11d0-94f2-00a0c91efb8b} /v Deny_Read /f > nul 2>&1
+reg delete HKLM\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{53f5630d-b6bf-11d0-94f2-00a0c91efb8b} /v Deny_Write /f > nul 2>&1
+reg delete HKLM\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{F33FDC04-D1AC-4E8E-9A30-19BBD4B108AE} /v Deny_Read /f > nul 2>&1
+reg delete HKLM\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{F33FDC04-D1AC-4E8E-9A30-19BBD4B108AE} /v Deny_Write /f > nul 2>&1
+reg delete HKU\%currentSID%\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices /v Deny_All /f > nul 2>&1
+reg delete HKU\%currentSID%\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{53f5630d-b6bf-11d0-94f2-00a0c91efb8b} /v Deny_Read /f > nul 2>&1
+reg delete HKU\%currentSID%\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{53f5630d-b6bf-11d0-94f2-00a0c91efb8b} /v Deny_Write /f > nul 2>&1
+reg delete HKU\%currentSID%\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{F33FDC04-D1AC-4E8E-9A30-19BBD4B108AE} /v Deny_Read /f > nul 2>&1
+reg delete HKU\%currentSID%\SOFTWARE\Policies\Microsoft\Windows\RemovableStorageDevices\{F33FDC04-D1AC-4E8E-9A30-19BBD4B108AE} /v Deny_Write /f > nul 2>&1
+
+echo Reverted to Default Setting!
+@echo:
+GOTO MAIN_ACTIVITY
+
 
 :PainText
 <nul set /p "=%DEL%" > "%~2"
